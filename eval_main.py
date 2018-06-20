@@ -5,13 +5,13 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.contrib import learn
 
-from TextCategorization.load_dataset import create_batches, load_train_vali_test_sets
+from TextCategorization.load_dataset import create_batches, load_test_set
 from TextCategorization.preprocessor import Preprocessor
 
 SET_OR_INTERACTIVE = input("Train from start or restore the latest checkpoint: (S/I)\n")
 
 while not (SET_OR_INTERACTIVE.isalpha() and SET_OR_INTERACTIVE.upper() in ['S', 'I']):
-    SET_OR_INTERACTIVE = input('Invalid input. (S) for test set, (R) for interactive evaluation:')
+    SET_OR_INTERACTIVE = input('Invalid input. (S) for test set, (I) for interactive evaluation:')
 
 SET_OR_INTERACTIVE.upper()
 
@@ -46,14 +46,15 @@ FLAGS(sys.argv)
 
 def main():
     if SET_OR_INTERACTIVE == "S":
-        _, _, _, _, test_sentences, y_test = load_train_vali_test_sets(None, None, FLAGS.test_file)
-    else:
-        preprocessor = Preprocessor(language="turkish")
-        test_sentences = []
-        test_sentence = input("Enter a test sentence:")
-        y_test = None
-        test_sentence = preprocessor.preprocess(test_sentence)
-        test_sentences.append(test_sentence)
+        test_sentences, y_test = load_test_set(FLAGS.test_file)
+    # else:
+    #     print("Broken!")
+    #     preprocessor = Preprocessor(language="turkish")
+    #     test_sentences = []
+    #     test_sentence = input("Enter a test sentence:")
+    #     y_test = None
+    #     test_sentence = preprocessor.preprocess(test_sentence)
+    #     test_sentences.append(test_sentence)
 
     embedding = np.load(FLAGS.fasttext_model)
 
@@ -82,6 +83,7 @@ def main():
             saver.restore(sess, checkpoint_file)
 
             input_x = graph.get_operation_by_name("input_x").outputs[0]
+            input_y = graph.get_operation_by_name("input_y").outputs[0]
             keep_prob = graph.get_operation_by_name("keep_prob").outputs[0]
             batch_norm = graph.get_operation_by_name("batch_norm").outputs[0]
             embedding_placeholder = graph.get_operation_by_name("embedding/pretrained_embedding").outputs[0]
@@ -89,17 +91,20 @@ def main():
             predictions = graph.get_operation_by_name("accuracy/predictions").outputs[0]
             predictions_top_k = graph.get_operation_by_name("top-k-accuracy/top2").outputs[0]
 
-            test_batches = create_batches(list(x_test), FLAGS.batch_size, 1, shuffle=False)
+            test_batches = create_batches(list(zip(x_test, y_test)), FLAGS.batch_size, 1, shuffle=False)
 
             all_preds = []
             all_preds_k = []
             for batch in test_batches:
-                batch_pred = sess.run(predictions, {input_x: batch,
-                                                      embedding_placeholder: embedding,
-                                                      keep_prob: 1.0,
-                                                      batch_norm: False})
+                x_batch, y_batch = zip(*batch)
+                batch_pred, batch_pred_top_k = sess.run([predictions, predictions_top_k], {input_x: x_batch,
+                                                                                           input_y: y_batch,
+                                                                                           embedding_placeholder: embedding,
+                                                                                           keep_prob: 1.0,
+                                                                                           batch_norm: False})
 
                 all_preds = np.concatenate([all_preds, batch_pred])
+                # all_preds_k = np.concatenate([all_preds_k, batch_pred_top_k])
 
     if y_test is not None:
         correct_predictions = float(sum(all_preds == np.argmax(y_test, axis=1)))
@@ -107,6 +112,7 @@ def main():
         print("Accuracy:", correct_predictions / float(len(y_test)))
     else:
         print(all_preds)
+        print(all_preds_k)
 
 
 if __name__ == '__main__':

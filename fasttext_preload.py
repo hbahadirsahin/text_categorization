@@ -20,8 +20,6 @@ def create_preloaded_fasttext_embeddings_and_vocabulary():
 def create_oov_vocabulary(dataset_path, fasttext_model_path):
     sentences, _ = load_data_and_labels(dataset_path)
     model = FastText.load_fasttext_format(fasttext_model_path)
-    
-
 
 def create_data_and_labels_using_fasttext_embeddings(dataset_path, fasttext_model_path, embedding_size=300, language='turkish'):
     print("Loading raw sentences and one hot encoded labels")

@@ -37,6 +37,9 @@ def load_train_vali_test_sets(train_path, vali_path, test_path="", language='tur
 
     return train_data, train_labels, vali_data, vali_labels, test_data, test_labels
 
+def load_test_set(test_path, language='turkish'):
+    test_data, test_labels = load_data_and_labels(test_path, language)
+    return test_data, test_labels
 
 def one_hot_encoded(class_numbers, num_classes=None):
     if num_classes is None:
