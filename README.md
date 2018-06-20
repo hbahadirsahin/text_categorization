@@ -6,12 +6,12 @@ Experiment Details:
 
 - For now, my ongoing experiments are consists of a basic TextCNN with FastText embeddings (cite: https://github.com/satojkovic/cnn-text-classification-tf/tree/use_fasttext). 
 - Pre-trained FastText embeddings taken from: https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md
-- I focused on Turkish versions of the dataset nowadays. Hence, preprocessing part falls short for English. 
+- I focus on Turkish versions of the dataset nowadays. Hence, preprocessing part falls short for English. 
 - Out-of-Vocabulary (OOV) words are ignored in this first commit. FastText can create embeddings for OOV by using char-ngrams; however, 
 it is not trivial to use this feature in a usual flow of the code. Hence, an extended version of tensorflow's VocabularyProcessor will be developed.
 - Parameter searches, different architectural changes are also included in my experiments.
 - I will share the results (with parameters and network architecture info); however, I won't provide any model files. Obviously, one cannot replicate my results due to different train/validation/test splits, but I don't think the end results will differ significantly. 
-
+- As far as I tested, the training part is working without any problem. There is an evaluation code piece too, but I could not find time to test it, properly. So, you may encounter weird, illogical, stupid stuff. I'd be happy to fix such issues if anyone out there reports =)
 
 To-do:
 
@@ -24,4 +24,4 @@ Not-gonna-do:
 
 - Probably, I will leave my pretty local paths alone in the code. Lucky you, you can always change those paths from code or give them as arguments =) 
 - Not gonna provide any pre-trained models. 
-- Not gonna provide my every single parameter or architectural related experiments. I guess putting only the best model to github is better (hence, there may be too much commented-out code).  
+- Not gonna provide my every single parameter or architectural related experiments. I guess putting only the best parameters and architecture to github is better (hence, there may be too much commented-out code).  But, to prevent code stealing/plagiarism kind of stuff, I may hide tiny, little surprises =)
