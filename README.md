@@ -2,7 +2,7 @@
 
 Experiment Details:
 
-- I use the dataset that me and my old colleagues constructed 3 years ago. Dataset is publicly available: https://data.mendeley.com/datasets/cdcztymf4k/1
+- I use the dataset that me and my old colleagues constructed 3 years ago. "English/Turkish Wikipedia Named-Entity Recognition and Text Categorization Dataset" is publicly available: https://data.mendeley.com/datasets/cdcztymf4k/1
 - For now, my ongoing experiments are consists of a basic TextCNN with FastText embeddings (cite: https://github.com/satojkovic/cnn-text-classification-tf/tree/use_fasttext). 
 - Pre-trained FastText embeddings taken from: https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md
 - I focus on Turkish versions of the dataset nowadays. Hence, preprocessing part falls short for English. 
