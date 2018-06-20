@@ -22,6 +22,8 @@ To-do:
 
 Not-gonna-do:
 
-- Probably, I will leave my pretty local paths alone in the code. Lucky you, you can always change those paths from code or give them as arguments =) 
+- Probably, I will leave my pretty local paths alone in the code. Lucky you, you can always change those paths from code or give them as arguments.
+- I do not have any plans to use any kind of morphological stuffs for Turkish (such as https://arxiv.org/pdf/1702.03654.pdf). But, you can always give it a shot. 
+- For FastText, I won't train my own model but will use the pre-trained model (both for Turkish and English). However, the case may be different for Elmo and Universal Sentence Encoder for Turkish (the last time I checked, both approaches do not have any pre-trained Turkish model).
 - Not gonna provide any pre-trained models. 
 - Not gonna provide my every single parameter or architectural related experiments. I guess putting only the best parameters and architecture to github is better (hence, there may be too much commented-out code).  But, to prevent code stealing/plagiarism kind of stuff, I may hide tiny, little surprises =)
