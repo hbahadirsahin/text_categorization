@@ -18,6 +18,7 @@ To-do:
 - Eventually, this codebase will evolve. I won't stuck to TextCNN. According to my initial plan, basic TextCNN will provide baseline results for the dataset.
 - Attention layers, variational dropout, GRU-based models will be added. As a note, I won't use LSTM since GRU provides better results (cite: https://arxiv.org/pdf/1702.01923.pdf).   
 - Obviously different kinds of embedding models/language models will be tested too. Sentence embeddings (basically averaging FastText vectors), Elmo and Universal Sentence Encoder are in my list.
+- PyTorch version of my model and rest of the code will be prepared.
 
 Not-gonna-do:
 
