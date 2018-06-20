@@ -10,8 +10,7 @@ Experiment Details:
 - Out-of-Vocabulary (OOV) words are ignored in this first commit. FastText can create embeddings for OOV by using char-ngrams; however, 
 it is not trivial to use this feature in a usual flow of the code. Hence, an extended version of tensorflow's VocabularyProcessor will be developed.
 - Parameter searches, different architectural changes are also included in my experiments.
-- I will share the results (with parameters and network architecture info); however, I won't provide any model files. Obviously, one cannot replicate
-my results due to different train/validation/test splits, but I don't think the end results will differ significantly. 
+- I will share the results (with parameters and network architecture info); however, I won't provide any model files. Obviously, one cannot replicate my results due to different train/validation/test splits, but I don't think the end results will differ significantly. 
 
 
 To-do:
@@ -20,3 +19,9 @@ To-do:
 - Eventually, this codebase will evolve. I won't stuck to TextCNN. According to my initial plan, basic TextCNN will provide baseline results for the dataset.
 - Attention layers, variational dropout, GRU-based models will be added. As a note, I won't use LSTM since GRU provides better results (cite: https://arxiv.org/pdf/1702.01923.pdf).   
 - Obviously different kinds of embedding models/language models will be tested too. Sentence embeddings (basically averaging FastText vectors), Elmo and Universal Sentence Encoder are in my list.
+
+Not-gonna-do:
+
+- Probably, I will leave my pretty local paths alone in the code. Lucky you, you can always change those paths from code or give them as arguments =) 
+- Not gonna provide any pre-trained models. 
+- Not gonna provide my every single parameter or architectural related experiments. I guess putting only the best model to github is better (hence, there may be too much commented-out code).  
