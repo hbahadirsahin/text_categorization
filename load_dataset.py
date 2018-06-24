@@ -25,7 +25,6 @@ def load_data_and_labels(dataset_path, language='turkish'):
                 category_id += 1
             entity_labels.append(line_tokens[1])
             sentences.append(preprocessor.preprocess(line_tokens[2]))
-    print(category_dict)
     return sentences, one_hot_encoded(category_labels, len(category_dict))
 
 
@@ -37,7 +36,8 @@ def load_train_vali_test_sets(train_path, vali_path, test_path="", language='tur
 
     return train_data, train_labels, vali_data, vali_labels, test_data, test_labels
 
-def load_test_set(test_path, language='turkish'):
+def load_test_set(train_path, test_path, language='turkish'):
+    _, _ = load_data_and_labels(train_path, language)
     test_data, test_labels = load_data_and_labels(test_path, language)
     return test_data, test_labels
 

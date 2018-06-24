@@ -6,7 +6,6 @@ import tensorflow as tf
 from tensorflow.contrib import learn
 
 from TextCategorization.load_dataset import create_batches, load_test_set
-from TextCategorization.preprocessor import Preprocessor
 
 SET_OR_INTERACTIVE = input("Train from start or restore the latest checkpoint: (S/I)\n")
 
@@ -15,10 +14,12 @@ while not (SET_OR_INTERACTIVE.isalpha() and SET_OR_INTERACTIVE.upper() in ['S', 
 
 SET_OR_INTERACTIVE.upper()
 
+train_path = "D:/PycharmProjects/TextCategorization/data/TWNERTC_TC_Coarse Grained NER_No_NoiseReduction.train"
 test_path = "D:/PycharmProjects/TextCategorization/data/TWNERTC_TC_Coarse Grained NER_No_NoiseReduction.test"
 fasttext_model_path = "D:/PycharmProjects/TextCategorization/fasttext_tr_embedding_cache.npy"
 
 tf.flags.DEFINE_string("test_file", test_path, "Test data source")
+tf.flags.DEFINE_string("train_file", train_path, "Train data source")
 tf.flags.DEFINE_string("fasttext_model", fasttext_model_path, "FastText embeddings source")
 
 # Model Parameters
@@ -46,7 +47,7 @@ FLAGS(sys.argv)
 
 def main():
     if SET_OR_INTERACTIVE == "S":
-        test_sentences, y_test = load_test_set(FLAGS.test_file)
+        test_sentences, y_test = load_test_set(FLAGS.train_file, FLAGS.test_file)
     # else:
     #     print("Broken!")
     #     preprocessor = Preprocessor(language="turkish")
@@ -89,7 +90,7 @@ def main():
             embedding_placeholder = graph.get_operation_by_name("embedding/pretrained_embedding").outputs[0]
 
             predictions = graph.get_operation_by_name("accuracy/predictions").outputs[0]
-            predictions_top_k = graph.get_operation_by_name("top-k-accuracy/top2").outputs[0]
+            predictions_top_k = graph.get_operation_by_name("accuracytopk/top2").outputs[0]
 
             test_batches = create_batches(list(zip(x_test, y_test)), FLAGS.batch_size, 1, shuffle=False)
 
@@ -104,7 +105,8 @@ def main():
                                                                                            batch_norm: False})
 
                 all_preds = np.concatenate([all_preds, batch_pred])
-                # all_preds_k = np.concatenate([all_preds_k, batch_pred_top_k])
+                print(batch_pred_top_k.shape)
+                all_preds_k = np.concatenate([all_preds_k, batch_pred_top_k])
 
     if y_test is not None:
         correct_predictions = float(sum(all_preds == np.argmax(y_test, axis=1)))

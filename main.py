@@ -46,11 +46,11 @@ tf.flags.DEFINE_integer("embedding_size", 300, "Embedding size, default(300)")
 tf.flags.DEFINE_integer("num_classes", 25, "Number of tasks, default(25)")
 tf.flags.DEFINE_integer("top_k_category", 5, "Number of categories to return as result, default(5)")
 
-tf.flags.DEFINE_integer("epoch", 50, "Number of epochs, default(25)")
+tf.flags.DEFINE_integer("epoch", 100, "Number of epochs, default(25)")
 tf.flags.DEFINE_integer("save_step", 500, "Step to save the model, default(500)")
-tf.flags.DEFINE_integer("evaluate_step", 500, "Step to evaluate the model, default(500)")
+tf.flags.DEFINE_integer("evaluate_step", 10, "Step to evaluate the model, default(500)")
 tf.flags.DEFINE_integer("train_batch_size", 512, "Training batch size, default(512)")
-tf.flags.DEFINE_integer("validation_batch_size", 5000, "Validation batch size, default(512)")
+tf.flags.DEFINE_integer("validation_batch_size", 512, "Validation batch size, default(512)")
 tf.flags.DEFINE_integer("max_sentence_length", 40, "Maximum sentence length, default(512)")
 tf.flags.DEFINE_integer("decay_step", 250, "How many steps before decay learning rate, default(250)")
 tf.flags.DEFINE_float("decay_rate", 0.1, "Rate of decay for learning rate, (default: 0.95)")
@@ -104,7 +104,7 @@ def main():
                              filter_sizes=list(map(int, FLAGS.filter_sizes.split(","))),
                              num_filters=FLAGS.num_filters,
                              l2_reg_lambda=0,
-                             embedding_type="static")
+                             embedding_type="nonstatic")
 
     update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
     with tf.control_dependencies(update_ops):

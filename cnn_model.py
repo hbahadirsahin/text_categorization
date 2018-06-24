@@ -18,28 +18,36 @@ class CNN_Categorizer_v2:
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.batch_norm = tf.placeholder(tf.bool, name="batch_norm")
 
+        self.embedding_placeholder = tf.placeholder(tf.float32, [self.vocabulary_size, embedding_size],
+                                                    name="pretrained_embedding")
+
         with tf.device('/cpu:0'), tf.name_scope("embedding"):
+            # Training embedding stuff
             if self.embedding_type == "static":
                 embedding_ = tf.Variable(tf.constant(0.0, shape=[self.vocabulary_size, embedding_size]),
                                          trainable=False,
                                          name='embedding_weight')
-                self.embedding_placeholder = tf.placeholder(tf.float32, [self.vocabulary_size, embedding_size],
-                                                            name="pretrained_embedding")
-                embedding = tf.assign(embedding_, self.embedding_placeholder)
+                embedding_train = tf.assign(embedding_, self.embedding_placeholder)
             elif self.embedding_type == "nonstatic":
                 embedding_ = tf.Variable(tf.constant(0.0, shape=[self.vocabulary_size, embedding_size]),
                                          trainable=True,
                                          name='embedding_weight')
-                self.embedding_placeholder = tf.placeholder(tf.float32, [self.vocabulary_size, embedding_size],
-                                                            name="pretrained_embedding")
-                embedding = tf.assign(embedding_, self.embedding_placeholder)
+                embedding_train = tf.assign(embedding_, self.embedding_placeholder)
             elif self.embedding_type == "random":
-                embedding = tf.Variable(tf.truncated_normal([self.vocabulary_size+1, self.embedding_size],
+                embedding_train = tf.Variable(tf.truncated_normal([self.vocabulary_size+1, self.embedding_size],
                                                             name='pretrained_embedding'))
             elif self.embedding_type == "multichannel":
                 raise NotImplementedError("No multichannel implementation")
             else:
                 print("Invalid empedding type:", self.embedding_type)
+
+            # Validation embedding must be non-trainable!
+            embedding_ = tf.Variable(tf.constant(0.0, shape=[self.vocabulary_size, embedding_size]),
+                                     trainable=False,
+                                     name='embedding_weight_vali')
+            embedding_validation = tf.assign(embedding_, self.embedding_placeholder)
+
+            embedding = tf.cond(self.batch_norm, lambda: embedding_train, lambda: embedding_validation)
 
             self.embedding_input = tf.nn.embedding_lookup(embedding, self.input_x)
             self.static_embedding_input_expanded = tf.expand_dims(self.embedding_input, -1)
@@ -99,7 +107,7 @@ class CNN_Categorizer_v2:
                 correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
                 self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
 
-            with tf.name_scope("top-k-accuracy"):
+            with tf.name_scope("accuracytopk"):
                 pred_softmax = tf.nn.softmax(output)
                 pred_sigmoid = tf.sigmoid(output)
                 self.pred_top_2 = tf.reduce_mean(
