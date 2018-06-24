@@ -15,6 +15,7 @@ it is not trivial to use this feature in the usual flow of the code. Hence, an e
 To-do:
 
 - More readable code =) 
+- Leverage DatasetAPI/tf.data in near future (Added 24/06/2018). Since finding a good resource is hard for this API's usage in text, I leave a link in here which I will use as a referance (https://github.com/LightTag/BibSample/blob/master/preppy.py).
 - Eventually, this codebase will evolve. I won't stuck to TextCNN. According to my initial plan, basic TextCNN will provide baseline results for the dataset.
 - Attention layers, variational dropout, GRU-based models will be added. As a note, I won't use LSTM since GRU provides better results (cite: https://arxiv.org/pdf/1702.01923.pdf).   
 - Obviously different kinds of embedding models/language models will be tested too. Sentence embeddings (basically averaging FastText vectors), Elmo and Universal Sentence Encoder are in my list.
