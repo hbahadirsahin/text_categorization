@@ -1,4 +1,4 @@
-# Text Categorization experiments for Turkish and English
+# README
 
 Experiment Details:
 
