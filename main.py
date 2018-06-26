@@ -13,10 +13,8 @@ from TextCategorization.load_dataset import create_batches, load_train_vali_test
 
 RESTORE_TRAINING = input("Train from start or restore the latest checkpoint: (T/R)\n")
 
-while not (RESTORE_TRAINING.isalpha() and RESTORE_TRAINING.upper() in ['T', 'R']):
+while RESTORE_TRAINING.upper() not in ['T', 'R']:
     RESTORE_TRAINING = input('Invalid input. (T) for train, (R) for restore:')
-
-RESTORE_TRAINING.upper()
 
 CHARACTER_EMBEDDING_SIZE = 128
 USE_TF_EMBEDDING_LOOKUP = True
@@ -48,7 +46,7 @@ tf.flags.DEFINE_integer("top_k_category", 5, "Number of categories to return as 
 
 tf.flags.DEFINE_integer("epoch", 100, "Number of epochs, default(25)")
 tf.flags.DEFINE_integer("save_step", 500, "Step to save the model, default(500)")
-tf.flags.DEFINE_integer("evaluate_step", 10, "Step to evaluate the model, default(500)")
+tf.flags.DEFINE_integer("evaluate_step", 500, "Step to evaluate the model, default(500)")
 tf.flags.DEFINE_integer("train_batch_size", 512, "Training batch size, default(512)")
 tf.flags.DEFINE_integer("validation_batch_size", 512, "Validation batch size, default(512)")
 tf.flags.DEFINE_integer("max_sentence_length", 40, "Maximum sentence length, default(512)")
@@ -72,7 +70,7 @@ def main():
         vocabulary = pickle.load(f)
     embedding = np.load(FLAGS.fasttext_model)
 
-    if RESTORE_TRAINING == "R":
+    if RESTORE_TRAINING.upper() == "R":
         print("Restoring the model!")
         model_number = input("Enter the checkpoint number:")
         while not model_number.isdigit() and len(model_number) == 10:
@@ -141,11 +139,13 @@ def main():
     dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
 
     saver = tf.train.Saver(tf.global_variables(), max_to_keep=1)
+    tf.add_to_collection('train_op', train_op)
 
-    if RESTORE_TRAINING == "R":
+    if RESTORE_TRAINING.upper() == "R":
         checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
         saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
         saver.restore(sess, checkpoint_file)
+        train_op = tf.get_collection('train_op')[0]
     else:
         checkpoint_dir = os.path.abspath(os.path.join(outdir, "checkpoints"))
         if not os.path.exists(checkpoint_dir):
