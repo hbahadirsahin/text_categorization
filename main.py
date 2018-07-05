@@ -138,7 +138,7 @@ def main():
     dev_summary_dir = os.path.join(outdir, "summaries", "dev")
     dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
 
-    saver = tf.train.Saver(tf.global_variables(), max_to_keep=1)
+    saver = tf.train.Saver(max_to_keep=1)
     tf.add_to_collection('train_op', train_op)
 
     if RESTORE_TRAINING.upper() == "R":
@@ -214,6 +214,12 @@ def main():
     num_batch = int((len(x_train) - 1) / FLAGS.train_batch_size) + 1
     print("Number of batches (train):", num_batch)
 
+    best_validation_accuracy = -1
+    best_validation_top2 = -1
+    best_validation_top3 = -1
+    best_validation_top4 = -1
+    best_validation_top5 = -1
+
     for train_batch in train_batches:
         x_batch, y_batch = zip(*train_batch)
         _, train_loss, train_accuracy, train_top2, train_top3, train_top4, train_top5 = train_step(x_batch, y_batch)
@@ -240,9 +246,23 @@ def main():
                   "Total validation Top-4 accuracy:", vali_top4,
                   "Total validation Top-5 accuracy:", vali_top5)
             print("-----------------------------------------------------")
+            if best_validation_accuracy < vali_acc:
+                best_validation_accuracy = vali_acc
+                best_validation_top2 = vali_top2
+                best_validation_top3 = vali_top3
+                best_validation_top4 = vali_top4
+                best_validation_top5 = vali_top5
+
+            print(datetime.datetime.now().isoformat(),
+                  "Best validation accuracy:", best_validation_accuracy,
+                  "Best validation Top-2 accuracy:", best_validation_top2,
+                  "Best validation Top-3 accuracy:", best_validation_top3,
+                  "Best validation Top-4 accuracy:", best_validation_top4,
+                  "Best validation Top-5 accuracy:", best_validation_top5)
 
         if current_step % FLAGS.save_step == 0 or current_step // num_batch == FLAGS.epoch:
-            save_step(current_step)
+            if best_validation_accuracy == vali_acc:
+                save_step(current_step)
         if current_step % num_batch == 0:
             current_epoch = current_step // num_batch
             print(datetime.datetime.now().isoformat(),
