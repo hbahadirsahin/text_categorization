@@ -29,7 +29,7 @@ it is not trivial to use this feature in the usual flow of the code. Hence, an e
 - Not gonna provide any pre-trained models. 
 - Not gonna provide my every single parameter or architectural related experiments. I guess putting only the best parameters and architecture to github is better (hence, there may be too much commented-out code).  But, to prevent code stealing/plagiarism kind of stuff, I may hide tiny, little surprises =)
 
-## How-to-run (Last Update: 07.07.2018)
+## How-to-run (Last Update: 16.07.2018)
 
 Well, I wrote lots of stuff but forgot to add how you can use my code (if you want =)).  Current flow may change, so I will keep last updated date at the header. 
 
