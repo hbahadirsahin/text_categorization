@@ -2,19 +2,20 @@ from gensim.models import FastText
 from TextCategorization.load_dataset import load_data_and_labels
 import numpy as np
 import pickle
+import argparse
 
 
-def create_preloaded_fasttext_embeddings_and_vocabulary():
-    fasttext_model_path = "D:/PycharmProjects/TextCategorization/wiki.tr"
-    print("Preloading starts...")
+def create_preloaded_fasttext_embeddings_and_vocabulary(fasttext_model_path = "D:/PycharmProjects/TextCategorization/wiki.tr",
+                                                        vocab_file_output_path = "fasttext_tr_vocab_cache.dat",
+                                                        embedding_cache_output_path = "fasttext_tr_embedding_cache.npy"):
     model = FastText.load_fasttext_format(fasttext_model_path)
     vocabulary = model.wv.vocab
     embeddings = np.array([model.wv.word_vec(word) for word in vocabulary.keys()])
 
-    with open('fasttext_tr_vocab_cache.dat', 'wb') as fw:
+    with open(vocab_file_output_path, 'wb') as fw:
         pickle.dump(vocabulary, fw, protocol=pickle.HIGHEST_PROTOCOL)
 
-    np.save('fasttext_tr_embedding_cache.npy', embeddings)
+    np.save(embedding_cache_output_path, embeddings)
     print("Preloading ends!")
 
 def create_oov_vocabulary(dataset_path, fasttext_model_path):
@@ -47,7 +48,23 @@ def create_data_and_labels_using_fasttext_embeddings(dataset_path, fasttext_mode
             sentence_embedding_list.clear()
             count += 1
 
-create_preloaded_fasttext_embeddings_and_vocabulary()
+def build_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ft-path', dest='ft_path', help='Dataset path!', required=True)
+    parser.add_argument('--vocab-path', dest='vocab_path', help='Output path for training set!', required=True)
+    parser.add_argument('--embedding-path', dest='embed_path', help='Output path for validation set!', required=True)
+    return parser
+
+if __name__ == '__main__':
+    parser = build_parser()
+    options = parser.parse_args()
+    ft_model_path = options.ft_path
+    vocab_output_path = options.vocab_path
+    embedding_cache_output = options.embed_path
+    create_preloaded_fasttext_embeddings_and_vocabulary(fasttext_model_path=ft_model_path,
+                                                        vocab_file_output_path=vocab_output_path,
+                                                        embedding_cache_output_path=embedding_cache_output)
+
 # turkish_dataset_path = "D:/TWNERTC_All_Versions/TWNERTC_TC_Coarse Grained NER_No_NoiseReduction.DUMP"
 # model_path = "D:/PycharmProjects/TextCategorization/wiki.tr"
 # create_data_and_labels_using_fasttext_embeddings(turkish_dataset_path, model_path)

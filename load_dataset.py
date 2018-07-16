@@ -1,8 +1,7 @@
 from TextCategorization.preprocessor import Preprocessor
 from random import shuffle
-from collections import Counter
+import argparse
 import numpy as np
-import pickle
 
 category_dict = dict()
 
@@ -73,23 +72,36 @@ def create_deterministic_train_vali_test_sets(dataset_path, train, vali, test):
     begin_test = end_vali + 1
 
     with open(train, "w", encoding="utf-8") as tf:
-        # pickle.dump(lines[begin_train:end_train], tf, protocol=pickle.HIGHEST_PROTOCOL)
         for idx,line in enumerate(lines[begin_train:end_train]):
             tf.write(line)
         print("Train file has been written")
 
     with open(vali,  "w", encoding="utf-8") as vf:
-        # pickle.dump(lines[begin_vali:end_vali], vf, protocol=pickle.HIGHEST_PROTOCOL)
         for idx,line in enumerate(lines[begin_vali:end_vali]):
             vf.write(line)
         print("Validation file has been written")
 
     with open(test,  "w", encoding="utf-8") as tef:
-        # pickle.dump(lines[begin_test:], tef, protocol=pickle.HIGHEST_PROTOCOL)
         for idx,line in enumerate(lines[begin_test:]):
             tef.write(line)
         print("Test file has been written")
 
+def build_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dataset-path', dest='dataset_path', help='Dataset path!', required=True)
+    parser.add_argument('--train-path', dest='train_path', help='Output path for training set!', required=True)
+    parser.add_argument('--vali-path', dest='vali_path', help='Output path for validation set!', required=True)
+    parser.add_argument('--test-path', dest='test_path', help='Output path for test set!', required=True)
+    return parser
+
+if __name__ == '__main__':
+    parser = build_parser()
+    options = parser.parse_args()
+    dataset_path = options.dataset_path
+    train_path = options.train_path
+    vali_path = options.vali_path
+    test_path = options.test_path
+    create_deterministic_train_vali_test_sets(dataset_path, train_path, vali_path, test_path)
 
 
 # turkish_dataset_path = "D:/TWNERTC_All_Versions/TWNERTC_TC_Coarse Grained NER_No_NoiseReduction.DUMP"
@@ -97,4 +109,3 @@ def create_deterministic_train_vali_test_sets(dataset_path, train, vali, test):
 # train_out_path = "D:/PycharmProjects/TextCategorization/data/TWNERTC_TC_Coarse Grained NER_No_NoiseReduction.train"
 # vali_out_path = "D:/PycharmProjects/TextCategorization/data/TWNERTC_TC_Coarse Grained NER_No_NoiseReduction.vali"
 # test_out_path = "D:/PycharmProjects/TextCategorization/data/TWNERTC_TC_Coarse Grained NER_No_NoiseReduction.test"
-# create_deterministic_train_vali_test_sets(turkish_dataset_path, train_out_path, vali_out_path, test_out_path)

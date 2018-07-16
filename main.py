@@ -36,7 +36,7 @@ tf.flags.DEFINE_string("fasttext_vocab", fasttext_vocab_path, "Vocabulary source
 tf.flags.DEFINE_string("fasttext_model", fasttext_model_path, "FastText embeddings source")
 
 # Model Parameters
-tf.flags.DEFINE_float("learning_rate", 0.001, "Learning rate, default(0.01)")
+tf.flags.DEFINE_float("learning_rate", 0.05, "Learning rate, default(0.01)")
 tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Learning rate, default(0.5)")
 tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Filter size, default(3,4,5)")
 tf.flags.DEFINE_integer("num_filters", 128, "Number of filters, default(128)")
@@ -44,9 +44,9 @@ tf.flags.DEFINE_integer("embedding_size", 300, "Embedding size, default(300)")
 tf.flags.DEFINE_integer("num_classes", 25, "Number of tasks, default(25)")
 tf.flags.DEFINE_integer("top_k_category", 5, "Number of categories to return as result, default(5)")
 
-tf.flags.DEFINE_integer("epoch", 100, "Number of epochs, default(25)")
+tf.flags.DEFINE_integer("epoch", 50, "Number of epochs, default(25)")
 tf.flags.DEFINE_integer("save_step", 500, "Step to save the model, default(500)")
-tf.flags.DEFINE_integer("evaluate_step", 500, "Step to evaluate the model, default(500)")
+tf.flags.DEFINE_integer("evaluate_step", 10, "Step to evaluate the model, default(500)")
 tf.flags.DEFINE_integer("train_batch_size", 512, "Training batch size, default(512)")
 tf.flags.DEFINE_integer("validation_batch_size", 512, "Validation batch size, default(512)")
 tf.flags.DEFINE_integer("max_sentence_length", 40, "Maximum sentence length, default(512)")
@@ -61,7 +61,7 @@ FLAGS(sys.argv)
 
 def main():
     print("Loading training/test data...")
-    train_sentences, y_train, vali_sentences, y_vali, test_sentences, y_test = load_train_vali_test_sets(
+    train_sentences, y_train, vali_sentences, y_vali, _, _ = load_train_vali_test_sets(
         FLAGS.training_file, FLAGS.validation_file, FLAGS.test_file)
 
     vocabulary_processor = learn.preprocessing.VocabularyProcessor(FLAGS.max_sentence_length)
@@ -84,12 +84,10 @@ def main():
 
     x_train = np.array(list(vocabulary_processor.transform(train_sentences)))
     x_vali = np.array(list(vocabulary_processor.transform(vali_sentences)))
-    x_test = np.array(list(vocabulary_processor.transform(test_sentences)))
     vocabulary_size = len(vocabulary)
 
     print("Train size: ", len(x_train))
     print("Validation size: ", len(x_vali))
-    print("Test size: ", len(x_test))
     print("Vocabulary size:", vocabulary_size)
 
     print("Training phase starts...")
@@ -102,7 +100,7 @@ def main():
                              filter_sizes=list(map(int, FLAGS.filter_sizes.split(","))),
                              num_filters=FLAGS.num_filters,
                              l2_reg_lambda=0,
-                             embedding_type="nonstatic")
+                             embedding_type="static")
 
     update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
     with tf.control_dependencies(update_ops):
@@ -186,16 +184,18 @@ def main():
                               cnn.embedding_placeholder: embedding,
                               cnn.keep_prob: 1.0,
                               cnn.batch_norm: False}
-            step, summaries, current_accuracy, top2, top3, top4, top5 = sess.run(
-                [global_step, dev_summary_op, cnn.accuracy, cnn.pred_top_2, cnn.pred_top_3,
-                 cnn.pred_top_4, cnn.pred_top_5], feed_dict_vali)
+            step, summaries, current_accuracy, top2, top3, top4, top5 = sess.run([global_step,
+                                                                                  dev_summary_op,
+                                                                                  cnn.accuracy,
+                                                                                  cnn.pred_top_2,
+                                                                                  cnn.pred_top_3,
+                                                                                  cnn.pred_top_4,
+                                                                                  cnn.pred_top_5], feed_dict_vali)
 
             vali_accuracy += current_accuracy
-
             vali_counter += 1
-
             print("Validation batch:", vali_counter, "- Batch accuracy", current_accuracy)
-            if writer:
+            if writer is not None:
                 writer.add_summary(summaries, step)
         vali_accuracy /= vali_counter
         return vali_accuracy, top2, top3, top4, top5
