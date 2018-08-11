@@ -24,11 +24,13 @@ class Preprocessor:
         return sentence.lower()
 
     def remove_digits(self, sentence):
-        # ''.join(filter(lambda c: not c.isdigit(), sentence))
         return ''.join([c for c in sentence if not c.isdigit()])
 
     def remove_stop_words(self, sentence):
         return ' '.join([i for i in sentence.split() if i not in self.stop_words])
+
+    def remove_alphanumeric_words(self, sentence):
+        return ''.join([i for i in sentence.split() if not i.isalnum()])
 
     def change_currency_chars(self, sentence):
         return sentence.replace('$', 'dolar').replace('£', 'sterlin').replace('€', 'euro')
@@ -42,9 +44,10 @@ class Preprocessor:
         preprocessed_sentence = self.remove_new_line(preprocessed_sentence)
         preprocessed_sentence = self.change_currency_chars(preprocessed_sentence)
         preprocessed_sentence = self.remove_punctuations(preprocessed_sentence)
-        preprocessed_sentence = self.remove_digits(preprocessed_sentence)
         preprocessed_sentence = self.remove_stop_words(preprocessed_sentence)
+        preprocessed_sentence = self.remove_digits(preprocessed_sentence)
         preprocessed_sentence = self.remove_multiple_white_spaces(preprocessed_sentence)
+        # preprocessed_sentence = self.remove_alphanumeric_words(preprocessed_sentence)
         return preprocessed_sentence.strip()
 
 

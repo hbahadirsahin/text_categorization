@@ -1,5 +1,8 @@
-import six
 from collections import defaultdict
+import numpy as np
+import six
+from gensim.models import FastText
+from TextCategorization.preprocessor import Preprocessor
 
 
 class Vocabulary(object):
@@ -138,3 +141,28 @@ class Vocabulary(object):
             raise ValueError("This vocabulary wasn't initialized with "
                              "support_reverse to support reverse() function.")
         return self._reverse_oov_mapping[class_id]
+
+
+def load_fasttext(fasttext_model_path = "D:/PycharmProjects/TextCategorization/wiki.tr",
+                  full_dataset_path = "D:/TWNERTC_All_Versions/TWNERTC_TC_Coarse Grained NER_No_NoiseReduction.DUMP",
+                  language='turkish'):
+
+    preprocessor = Preprocessor(language)
+    model = FastText.load_fasttext_format(fasttext_model_path)
+    vocabulary = model.wv.vocab
+
+    with open(full_dataset_path, 'r', encoding="utf-8") as file:
+        for line in file:
+            line_tokens = line.split('\t')
+            preprocessed_sentence = preprocessor.preprocess(line_tokens[2])
+            print(preprocessed_sentence)
+            for token in preprocessed_sentence.split(" "):
+                print(token)
+                if token not in vocabulary.keys():
+                    print(token, "is out of vocabulary")
+                    embeddings = np.array(model.wv.word_vec(token))
+                    print(embeddings)
+                else:
+                    print(token, "is in vocabulary")
+
+load_fasttext()
