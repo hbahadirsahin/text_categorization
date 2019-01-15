@@ -1,5 +1,11 @@
 # README
 
+## WARNING!!
+
+This repository is deprecated, since I don't like Tensorflow as I used to be. Check this repository for equivalent but PyTorch version:
+
+https://github.com/hbahadirsahin/nlp-experiments-in-pytorch
+
 ## Experiment Details:
 
 - I use the dataset that me and my old colleagues constructed 3 years ago. "English/Turkish Wikipedia Named-Entity Recognition and Text Categorization Dataset" is publicly available: https://data.mendeley.com/datasets/cdcztymf4k/1
